@@ -1,7 +1,35 @@
 <html>
-    <body>
+
+<head>
+    <title>
+        Token Squarifier
+    </title>
+</head>
+
+<body>
+    <div style="display: flex; flex-direction: column; width: 100%; align-items: center; padding: 50px;">
         <h1>
-            TEST
+            Token Squarifier
         </h1>
-    </body>
+        <span>
+            Turn any image into a square token!
+        </span>
+        <input id="url" placeholder="put image url here" style="margin-top: 20px;"/>
+        <button type="button" onclick="getUrl()" style="margin-top: 20px;">Click me!</button>
+        <a id="result" style="margin-top: 20px;"></a>
+    </div>
+
+    <script>
+        function getUrl() {
+            url = document.getElementById("url").value;
+            console.log(url);
+            url = new URL(encodeURIComponent(url), window.location.href);
+            result = document.getElementById("result");
+            result.innerHTML = url;
+            result.href = url;
+        }
+    </script>
+
+</body>
+
 </html>
