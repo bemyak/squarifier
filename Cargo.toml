@@ -1,5 +1,5 @@
 [package]
-authors = ["Sergej Gureev <sergej.gureev@relex.fi>"]
+authors = ["Sergei Gureev <bemyak@pm.me>"]
 edition = "2018"
 name    = "squarifier"
 version = "0.1.0"
