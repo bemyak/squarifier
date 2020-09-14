@@ -1,0 +1,30 @@
+---
+
+- name: Create user
+  user:
+    name: "{{ squarifier_user}}"
+    home: "{{ squarifier_install_dir }}"
+    create_home: yes
+    system: yes
+  become: yes
+
+- name: Install squarifier binary
+  copy:
+    src: "{{ role_path }}/../../../target/release/squarifier"
+    dest: "{{ squarifier_install_dir }}/"
+    mode: "0771"
+  become: yes
+  
+- name: Install systemd unit file
+  template:
+    src: squarifier.service.j2
+    dest: /etc/systemd/system/squarifier.service
+  become: yes
+
+- name: Start and enable squarifier
+  systemd:
+    name: squarifier
+    daemon_reload: yes
+    enabled: yes
+    state: restarted
+  become: yes

@@ -1,0 +1,4 @@
+---
+- hosts: monitor
+  roles:
+    - role: squarifier

@@ -1,0 +1,55 @@
+stages:
+  - compile
+  - deploy
+
+variables:
+  CARGO_HOME: $CI_PROJECT_DIR/cargo
+  # Reminder to set INVENTORY_URL - Object storage pre-auth url to read ansible-inventory
+  INVENTORY_URL: $INVENTORY_URL
+
+test:
+  # We need to use an image with GLIBC <= 2.17 to be compatible with CentOS 7
+  image: rust:stretch
+  stage: compile
+  script:
+    - apt update && apt install -y cmake clang
+    - cargo test
+  cache:
+    paths:
+      - cargo/
+      - target/
+  except:
+    - master
+
+build:
+  image: rust:stretch
+  stage: compile
+  script:
+    # Cmake and Clang are needed to build ejdb
+    - apt update && apt install -y cmake clang
+    - cargo build --release
+  cache:
+    paths:
+      - cargo/
+      - target/
+  artifacts:
+    paths:
+      - target/release/squarifier
+  only:
+    - master
+
+deploy:
+  image: alpine:latest
+  stage: deploy
+  variables:
+    ANSIBLE_HOST_KEY_CHECKING: "False"
+  script:
+    - apk add openssh ansible git py3-jmespath tar unzip
+    - mkdir ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 0600 ~/.ssh/id_rsa
+    - cd ansible
+    - wget $INVENTORY_URL
+    - ansible-playbook -i ./inventory -u ubuntu site.yml
+  only:
+    - master

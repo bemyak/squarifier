@@ -1,0 +1,15 @@
+[Unit]
+Description=Squarifier
+Documentation=https://gitlab.com/bemyak/squarifier
+After=network-online.target
+Wants=network-online.target systemd-networkd-wait-online.service
+
+[Service]
+Restart=on-failure
+User={{ squarifier_user }}
+Group={{ squarifier_user }}
+WorkingDirectory={{ squarifier_install_dir }}
+ExecStart={{ squarifier_install_dir }}/squarifier
+
+[Install]
+WantedBy=multi-user.target
