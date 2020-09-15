@@ -46,8 +46,22 @@ async fn process_req(req: Request<()>) -> Err {
         res
     })?;
 
-    let decoded = urldecode::decode(param);
-    let url = Url::parse(&decoded).map_err(|err| {
+    let (_, encoded_url) = {
+        let mut i = param.rsplitn(2, '.');
+        (i.next().unwrap_or_default(), i.next().unwrap_or_default())
+    };
+
+    let decoded = base64::decode(encoded_url).map_err(|_| {
+        let mut res = Response::new(StatusCode::BadRequest);
+        res.append_header("error", "Can't decode base64 data");
+        res
+    })?;
+    let decoded_str = std::str::from_utf8(&decoded).map_err(|_| {
+        let mut res = Response::new(StatusCode::BadRequest);
+        res.append_header("error", "Can't decode base64 data");
+        res
+    })?;
+    let url = Url::parse(decoded_str).map_err(|err| {
         let mut res = Response::new(StatusCode::BadRequest);
         let error = format!("Can't parse URL: {}", err.to_string());
         let error: &str = error.as_ref();

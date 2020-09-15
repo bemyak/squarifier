@@ -22,8 +22,8 @@
     <script>
         function getUrl() {
             url = document.getElementById("url").value;
-            console.log(url);
-            url = new URL(encodeURIComponent(url), window.location.href);
+            ext = url.split('.').pop();
+            url = new URL(btoa(url), window.location.href) + "." + ext;
             result = document.getElementById("result");
             result.innerHTML = url;
             result.href = url;
