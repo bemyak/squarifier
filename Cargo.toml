@@ -2,7 +2,7 @@
 authors = ["Sergei Gureev <bemyak@pm.me>"]
 edition = "2018"
 name    = "squarifier"
-version = "0.1.0"
+version = "0.2.0"
 
 [profile.release]
 lto   = true
@@ -10,7 +10,8 @@ panic = 'abort'
 
 [dependencies]
 async-std = { version = "1.6", features = ["attributes"] }
-base64    = "0.12"
+base64    = "0.13"
 image     = "0.23"
-surf      = "1.0"
+surf      = "2.0"
 tide      = "0.13"
+http-types = "2.5"

@@ -1,33 +1,30 @@
 use std::cmp::{max, min};
 
+use http_types::{mime, Mime, Request, Response, StatusCode, Url};
 use image::{DynamicImage, ImageError, ImageFormat, RgbaImage};
-use mime::Name;
-use surf::{mime, url::Url};
-use tide::{Request, Response, StatusCode};
+use tide::Request as TideReq;
 
 const PAGE: &str = include_str!("site/index.html");
 const FAVICON: &[u8] = include_bytes!("site/favicon.ico");
 
 #[async_std::main]
 async fn main() -> Result<(), std::io::Error> {
-    // let page = include_str!("site/index.html");
-
     tide::log::start();
     let mut app = tide::new();
     app.at("/").get(|_| async {
         let mut res = Response::new(StatusCode::Ok);
-        res.set_content_type("text/html");
+        res.set_content_type(mime::HTML);
         res.set_body(PAGE);
         Ok(res)
     });
     app.at("/favicon.ico").get(|_| async {
         let mut res = Response::new(StatusCode::Ok);
-        res.set_content_type("mage/vnd.microsoft.icon");
+        res.set_content_type(mime::ICO);
         res.set_body(FAVICON);
         Ok(res)
     });
-    app.at("/:param").get(|req: Request<()>| async move {
-        let err = process_req(req).await;
+    app.at("/:param").get(|req: TideReq<()>| async move {
+        let err = process_req(req.into()).await;
         match err {
             Ok(r) => Ok(r),
             Err(r) => Ok(r),
@@ -39,12 +36,8 @@ async fn main() -> Result<(), std::io::Error> {
 
 type Err = Result<Response, Response>;
 
-async fn process_req(req: Request<()>) -> Err {
-    let param: String = req.param("param").map_err(|_| {
-        let mut res = Response::new(StatusCode::BadRequest);
-        res.append_header("error", "You need to specify target url as parameter");
-        res
-    })?;
+async fn process_req(req: Request) -> Err {
+    let param = req.url().path().trim_start_matches("/");
 
     let (_, encoded_url) = {
         let mut i = param.rsplitn(2, '.');
@@ -78,13 +71,13 @@ async fn process_req(req: Request<()>) -> Err {
     })?;
 
     if !res1.status().is_success() {
-        let mut res = Response::new(res1.status().as_u16());
+        let mut res = Response::new(res1.status());
         res.set_body(res1.body_bytes().await.unwrap_or_default());
         return Err(res);
     }
 
-    let mime = res1.mime().unwrap_or(mime::TEXT_PLAIN);
-    if mime.type_() != mime::IMAGE {
+    let mime = res1.content_type().unwrap_or(mime::PLAIN);
+    if mime.basetype() != "image" {
         let mut res = Response::new(StatusCode::BadRequest);
         let error = format!(
             "Bad content type for {}, expected image, got: {}",
@@ -103,7 +96,7 @@ async fn process_req(req: Request<()>) -> Err {
         res
     })?;
 
-    let format = mime_to_image_format(mime.subtype(), &url).map_err(|err| {
+    let format = mime_to_image_format(&mime, &url).map_err(|err| {
         let mut res = Response::new(StatusCode::BadRequest);
         let error = format!("Unsupported image type for {}: {}", url, err);
         let error: &str = error.as_ref();
@@ -121,16 +114,25 @@ async fn process_req(req: Request<()>) -> Err {
 
     let mut res = Response::new(StatusCode::Ok);
     res.set_body(result);
-    res.set_content_type(mime.to_string().as_ref());
+    res.set_content_type(mime);
     Ok(res)
 }
 
-fn mime_to_image_format(mime: Name, url: &Url) -> Result<ImageFormat, ImageError> {
-    match mime {
-        mime::PNG => Ok(ImageFormat::Png),
-        mime::JPEG => Ok(ImageFormat::Jpeg),
-        mime::GIF => Ok(ImageFormat::Gif),
-        mime::BMP => Ok(ImageFormat::Bmp),
+fn mime_to_image_format(mime: &Mime, url: &Url) -> Result<ImageFormat, ImageError> {
+    match mime.subtype() {
+        "png" => Ok(ImageFormat::Png),
+        "jpeg" | "jpg" => Ok(ImageFormat::Jpeg),
+        "gif" => Ok(ImageFormat::Gif),
+        "webp" => Ok(ImageFormat::WebP),
+        "pnm" => Ok(ImageFormat::Pnm),
+        "tiff" => Ok(ImageFormat::Tiff),
+        "tga" => Ok(ImageFormat::Tga),
+        "dds" => Ok(ImageFormat::Dds),
+        "bpm" => Ok(ImageFormat::Bmp),
+        "ico" => Ok(ImageFormat::Ico),
+        "hdr" => Ok(ImageFormat::Hdr),
+        "farbfeld" => Ok(ImageFormat::Farbfeld),
+        "avif" => Ok(ImageFormat::Avif),
         _ => ImageFormat::from_path(url.to_string()),
     }
 }
