@@ -37,7 +37,7 @@ async fn main() -> Result<(), std::io::Error> {
 type Err = Result<Response, Response>;
 
 async fn process_req(req: Request) -> Err {
-    let param = req.url().path().trim_start_matches("/");
+    let param = req.url().path().trim_start_matches('/');
 
     let (_, encoded_url) = {
         let mut i = param.rsplitn(2, '.');
