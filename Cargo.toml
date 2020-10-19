@@ -12,6 +12,6 @@ panic = 'abort'
 async-std = { version = "1.6", features = ["attributes"] }
 base64    = "0.13"
 image     = "0.23"
-surf      = "2.0"
-tide      = "0.13"
-http-types = "2.5"
+surf      = "2.1"
+tide      = "0.14"
+http-types = "2.6"
