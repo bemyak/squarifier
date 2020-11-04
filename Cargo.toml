@@ -9,7 +9,7 @@ lto   = true
 panic = 'abort'
 
 [dependencies]
-async-std = { version = "1.6", features = ["attributes"] }
+async-std = { version = "1.7", features = ["attributes"] }
 base64    = "0.13"
 image     = "0.23"
 surf      = "2.1"
