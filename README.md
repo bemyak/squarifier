@@ -3,7 +3,7 @@ This is a tiny project that help me run my D&D and Pathfinder games at Roll20.
 
 ## Where?
 
-You can try it at https://rollbot.ml
+You can try it at https://squarifier.ml
 
 ## What?
 
@@ -13,7 +13,7 @@ In short, it dynamically turns this:
 
 into this:
 
-![Squarified Qurashith](https://rollbot.ml/aHR0cHM6Ly8yZS5hb25wcmQuY29tL0ltYWdlcy9Nb25zdGVycy9RdXJhc2hpdGgucG5n.png)
+![Squarified Qurashith](https://squarifier.ml/aHR0cHM6Ly8yZS5hb25wcmQuY29tL0ltYWdlcy9Nb25zdGVycy9RdXJhc2hpdGgucG5n.png)
 
 The image got cropped and made into a square.
 
