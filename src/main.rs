@@ -139,7 +139,7 @@ fn mime_to_image_format(mime: &Mime, url: &Url) -> Result<ImageFormat, ImageErro
 
 fn squarify(bytes: &[u8], format: ImageFormat) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     let src_image = image::load_from_memory_with_format(&bytes, format)?;
-    let src_rgba = src_image.to_rgba();
+    let src_rgba = src_image.to_rgba8();
 
     let mut min_x = src_rgba.width();
     let mut max_x = 0;
