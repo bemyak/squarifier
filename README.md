@@ -24,7 +24,7 @@ There are few problems with Roll20 that I was constantly facing:
 square
 
 I found the solution for the first problem, which is described at the end of
-my blog post [Rolling like a Pro](https://bemyak.ml/006-rolling-like-a-pro/).
+my blog post [Rolling like a Pro](https://bemyak.ml/dev/rolling-like-a-pro/).
 In short, I'm now able to insert images as links, which doesn't eat any space at
 all.
 
