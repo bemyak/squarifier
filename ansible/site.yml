@@ -1,4 +1,4 @@
 ---
-- hosts: monitor
+- hosts: nextcloud
   roles:
     - role: squarifier

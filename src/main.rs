@@ -56,7 +56,7 @@ async fn process_req(req: Request) -> Err {
     })?;
     let url = Url::parse(decoded_str).map_err(|err| {
         let mut res = Response::new(StatusCode::BadRequest);
-        let error = format!("Can't parse URL: {}", err.to_string());
+        let error = format!("Can't parse URL: {}", err);
         let error: &str = error.as_ref();
         res.append_header("error", error);
         res
@@ -64,7 +64,7 @@ async fn process_req(req: Request) -> Err {
 
     let mut res1 = surf::get(url.clone()).await.map_err(|err| {
         let mut res = Response::new(StatusCode::InternalServerError);
-        let error = format!("Can't fetch url {}: {}", url, err.to_string());
+        let error = format!("Can't fetch url {}: {}", url, err);
         let error: &str = error.as_ref();
         res.append_header("error", error);
         res
@@ -138,7 +138,7 @@ fn mime_to_image_format(mime: &Mime, url: &Url) -> Result<ImageFormat, ImageErro
 }
 
 fn squarify(bytes: &[u8], format: ImageFormat) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
-    let src_image = image::load_from_memory_with_format(&bytes, format)?;
+    let src_image = image::load_from_memory_with_format(bytes, format)?;
     let src_rgba = src_image.to_rgba8();
 
     let mut min_x = src_rgba.width();
@@ -171,7 +171,5 @@ fn squarify(bytes: &[u8], format: ImageFormat) -> Result<Vec<u8>, Box<dyn std::e
         }
     }
 
-    let mut buff = Vec::new();
-    DynamicImage::ImageRgba8(new_image).write_to(&mut buff, format)?;
-    Ok(buff)
+    Ok(DynamicImage::ImageRgba8(new_image).into_bytes())
 }
